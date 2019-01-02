@@ -89,6 +89,14 @@ spring:
             enabled: false
     thymeleaf:
         mode: HTML
+    cloud:
+        stream:
+            bindings:
+                nelResponsesChannel:
+                    destination: nel-responses
+                    content-type: application/json
+                nelRequestsChannel:
+                    destination: nel-requests
 
 server:
     servlet:
