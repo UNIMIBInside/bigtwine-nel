@@ -3,6 +3,8 @@ package it.unimib.disco.bigtwine.config;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import it.unimib.disco.bigtwine.messaging.NelRequestsConsumerChannel;
+import it.unimib.disco.bigtwine.messaging.NelResponsesProducerChannel;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +22,7 @@ import org.springframework.messaging.support.GenericMessage;
  * See http://docs.spring.io/spring-cloud-stream/docs/current/reference/htmlsingle/
  * for the official Spring Cloud Stream documentation.
  */
-@EnableBinding(value = { Source.class })
+@EnableBinding(value = { Source.class, NelResponsesProducerChannel.class, NelRequestsConsumerChannel.class })
 public class MessagingConfiguration {
 
     @Value("${spring.application.name:JhipsterService}")
