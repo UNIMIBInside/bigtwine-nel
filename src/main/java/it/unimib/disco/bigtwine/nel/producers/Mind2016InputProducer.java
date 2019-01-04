@@ -1,34 +1,53 @@
 package it.unimib.disco.bigtwine.nel.producers;
 
+import it.unimib.disco.bigtwine.commons.models.Entity;
 import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
 
 import java.io.IOException;
 import java.io.Writer;
 
 public class Mind2016InputProducer implements InputProducer {
+
+    private Writer writer;
+    private static final String lineDelimiter = "\n";
+    private static final String colDelimiter = "\t";
+
     @Override
-    public void setWriter(Writer writer) throws IOException {
-        // TODO: Implement this
+    public void setWriter(Writer writer) {
+        this.writer = writer;
     }
 
     @Override
     public Writer getWriter() {
-        // TODO: Implement this
-        return null;
+        return this.writer;
     }
 
     @Override
     public void append(RecognizedTweet item) throws IOException {
-        // TODO: Implement this
+        this.writer.append(String.join(colDelimiter, "[#ID#]", item.getId()));
+        this.writer.append(lineDelimiter);
+        for (Entity entity : item.getEntities()) {
+
+            this.writer.append(String.join(colDelimiter,
+                "[#ETS#]",
+                entity.getValue(),
+                entity.getLabel(),
+                Float.toString(entity.getProbability())));
+            this.writer.append(lineDelimiter);
+
+        }
+        this.writer.append(String.join(colDelimiter, "[#TWEET#]", item.getText()));
+        this.writer.append(lineDelimiter);
+        this.writer.append(lineDelimiter);
     }
 
     @Override
     public void close() throws IOException {
-        // TODO: Implement this
+        this.writer.close();
     }
 
     @Override
     public void flush() throws IOException {
-        // TODO: Implement this
+        this.writer.flush();
     }
 }
