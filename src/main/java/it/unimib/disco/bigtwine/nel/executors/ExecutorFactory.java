@@ -33,7 +33,9 @@ public class ExecutorFactory implements FactoryBean<Executor> {
 
         switch (linker) {
             case mind2016:
-                return new Mind2016DockerExecutor();
+                Mind2016DockerExecutor executor = new Mind2016DockerExecutor();
+                executor.setKnowledgeBasePath("/kb");
+                return executor;
             default:
                 return null;
         }

@@ -184,6 +184,14 @@ public abstract class NelSyncFileProcessor implements Processor, SyncFileProcess
             return false;
         }
 
+        try {
+            if (!outputFile.createNewFile()) {
+                return false;
+            }
+        } catch (IOException|SecurityException e) {
+            return false;
+        }
+
         this.getFileExecutor().setInputPath(inputFile.getAbsolutePath());
         this.getFileExecutor().setOutputPath(outputFile.getAbsolutePath());
         boolean res = this.getSyncExecutor().execute() != null;
