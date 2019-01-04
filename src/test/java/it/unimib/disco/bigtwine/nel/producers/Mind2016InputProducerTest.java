@@ -1,6 +1,6 @@
 package it.unimib.disco.bigtwine.nel.producers;
 
-import it.unimib.disco.bigtwine.commons.models.Entity;
+import it.unimib.disco.bigtwine.commons.models.RecognizedTweet.Entity;
 import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
 import it.unimib.disco.bigtwine.nel.Linker;
 import org.junit.Test;

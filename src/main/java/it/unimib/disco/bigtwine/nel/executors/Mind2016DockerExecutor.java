@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class Mind2016DockerExecutor extends DockerExecutor implements SyncFileExecutor {
+public final class Mind2016DockerExecutor extends DockerExecutor implements SyncFileExecutor {
     public static final String DOCKER_IMAGE = "bigtwine-tool-nel";
 
     private String inputPath;

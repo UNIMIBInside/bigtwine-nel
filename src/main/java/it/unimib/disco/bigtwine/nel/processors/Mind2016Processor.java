@@ -6,7 +6,7 @@ import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
 import it.unimib.disco.bigtwine.commons.processors.ProcessorListener;
 import it.unimib.disco.bigtwine.nel.Linker;
 
-public class Mind2016Processor implements Processor {
+public final class Mind2016Processor implements Processor {
     @Override
     public Linker getLinker() {
         return null;

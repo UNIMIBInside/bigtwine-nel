@@ -1,12 +1,12 @@
 package it.unimib.disco.bigtwine.nel.producers;
 
-import it.unimib.disco.bigtwine.commons.models.Entity;
 import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
+import it.unimib.disco.bigtwine.commons.models.RecognizedTweet.Entity;
 
 import java.io.IOException;
 import java.io.Writer;
 
-public class Mind2016InputProducer implements InputProducer {
+public final class Mind2016InputProducer implements InputProducer {
 
     private Writer writer;
     private static final String lineDelimiter = "\n";
