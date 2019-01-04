@@ -1,5 +1,6 @@
 package it.unimib.disco.bigtwine.nel.parsers;
 
+import it.unimib.disco.bigtwine.commons.csv.CSVFactory;
 import it.unimib.disco.bigtwine.nel.Linker;
 import javafx.util.Builder;
 
@@ -58,7 +59,7 @@ public class OutputParserBuilder implements Builder<OutputParser> {
         OutputParser outputParser;
         switch (this.linker) {
             case mind2016:
-                outputParser = new Mind2016OutputParser();
+                outputParser = new Mind2016OutputParser(CSVFactory.getFactory());
                 break;
             default:
                 return null;

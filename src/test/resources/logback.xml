@@ -2,7 +2,7 @@
 <!DOCTYPE configuration>
 
 <configuration scan="true">
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <include link="org/springframework/boot/logging/logback/base.xml"/>
 
     <logger name="it.unimib.disco.bigtwine" level="INFO"/>
 
