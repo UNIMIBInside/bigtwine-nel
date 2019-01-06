@@ -18,15 +18,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public abstract class NelSyncFileProcessor implements Processor, SyncFileProcessor {
+public abstract class NelSyncFileProcessor implements Processor, SyncFileProcessor<RecognizedTweet> {
 
     protected SyncFileExecutor executor;
     protected OutputParserBuilder outputParserBuilder;
     protected InputProducerBuilder inputProducerBuilder;
-    protected String outputDirectory;
     protected String processorId;
-    protected String workingDirectory;
-    protected String inputDirectory;
+    protected File workingDirectory;
+    protected File inputDirectory;
+    protected File outputDirectory;
     protected ProcessorListener<LinkedTweet> processorListener;
 
     public NelSyncFileProcessor(SyncFileExecutor executor, InputProducerBuilder inputProducerBuilder, OutputParserBuilder outputParserBuilder) {
@@ -36,12 +36,12 @@ public abstract class NelSyncFileProcessor implements Processor, SyncFileProcess
     }
 
     @Override
-    public String getOutputDirectory() {
+    public File getOutputDirectory() {
         return outputDirectory;
     }
 
     @Override
-    public void setOutputDirectory(String outputDirectory) {
+    public void setOutputDirectory(File outputDirectory) {
         this.outputDirectory = outputDirectory;
     }
 
@@ -88,22 +88,22 @@ public abstract class NelSyncFileProcessor implements Processor, SyncFileProcess
     }
 
     @Override
-    public String getInputDirectory() {
+    public File getInputDirectory() {
         return this.inputDirectory;
     }
 
     @Override
-    public void setInputDirectory(String inputDirectory) {
+    public void setInputDirectory(File inputDirectory) {
         this.inputDirectory = inputDirectory;
     }
 
     @Override
-    public String getWorkingDirectory() {
+    public File getWorkingDirectory() {
         return this.workingDirectory;
     }
 
     @Override
-    public void setWorkingDirectory(String workingDirectory) {
+    public void setWorkingDirectory(File workingDirectory) {
         this.workingDirectory = workingDirectory;
     }
 
@@ -118,35 +118,12 @@ public abstract class NelSyncFileProcessor implements Processor, SyncFileProcess
     }
 
     @Override
-    public boolean setupWorkingDirectory() {
-        boolean res = true;
-        for (String dir : new String[] {this.inputDirectory, this.outputDirectory}) {
-            if (dir == null) continue;
-
-            File dirf = (new File(dir));
-            if (!dirf.exists()) {
-                try {
-                    res &= dirf.mkdirs();
-                }catch (SecurityException e) {
-                    return false;
-                }
-            }
-        }
-
-        return res;
-    }
-
-    @Override
     public boolean configureProcessor() {
         this.processorId = RandomStringUtils.randomAlphanumeric(16);
-        this.inputDirectory = Paths.get(this.getWorkingDirectory(), this.getProcessorId(), "input").toString();
-        this.outputDirectory = Paths.get(this.getWorkingDirectory(), this.getProcessorId(), "output").toString();
+        this.inputDirectory = Paths.get(this.getWorkingDirectory().toString(), this.getProcessorId(), "input").toFile();
+        this.outputDirectory = Paths.get(this.getWorkingDirectory().toString(), this.getProcessorId(), "output").toFile();
 
-        if (!this.setupWorkingDirectory()) {
-            return false;
-        }
-
-        return true;
+        return this.setupWorkingDirectory();
     }
 
     @Override
@@ -156,10 +133,36 @@ public abstract class NelSyncFileProcessor implements Processor, SyncFileProcess
 
     @Override
     public boolean process(String tag, RecognizedTweet[] tweets) {
-        Path inputFilePath = Paths.get(this.getInputDirectory(), tag);
-        Path outputFilePath = Paths.get(this.getOutputDirectory(), tag);
-        File inputFile = new File(inputFilePath.toAbsolutePath().toString());
-        File outputFile = new File(outputFilePath.toAbsolutePath().toString());
+        File inputFile = this.makeInputFile(tag);
+        File outputFile = this.makeOutputFile(tag);
+
+        boolean res = this.generateInputFile(inputFile, tweets);
+
+        if (!res) {
+            return false;
+        }
+
+        try {
+            if (!outputFile.createNewFile()) {
+                return false;
+            }
+        } catch (IOException|SecurityException e) {
+            return false;
+        }
+
+        res = this.getSyncFileExecutor().execute(inputFile, outputFile) != null;
+
+        if (!res) {
+            return false;
+        }
+
+        this.processOutputFile(outputFile);
+
+        return true;
+    }
+
+    @Override
+    public boolean generateInputFile(File inputFile, RecognizedTweet[] tweets) {
         FileWriter fileWriter;
 
         try {
@@ -183,24 +186,6 @@ public abstract class NelSyncFileProcessor implements Processor, SyncFileProcess
         } catch (IOException e) {
             return false;
         }
-
-        try {
-            if (!outputFile.createNewFile()) {
-                return false;
-            }
-        } catch (IOException|SecurityException e) {
-            return false;
-        }
-
-        this.getFileExecutor().setInputPath(inputFile.getAbsolutePath());
-        this.getFileExecutor().setOutputPath(outputFile.getAbsolutePath());
-        boolean res = this.getSyncExecutor().execute() != null;
-
-        if (!res) {
-            return false;
-        }
-
-        this.processOutputFile(outputFile);
 
         return true;
     }

@@ -7,16 +7,13 @@ import com.github.dockerjava.api.model.Volume;
 import it.unimib.disco.bigtwine.commons.executors.DockerExecutor;
 import it.unimib.disco.bigtwine.commons.executors.SyncFileExecutor;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public final class Mind2016DockerExecutor extends DockerExecutor implements SyncFileExecutor {
     public static final String DOCKER_IMAGE = "bigtwine-tool-nel";
 
-    private String inputPath;
-    private String outputPath;
     private String kbPath;
 
     protected Mind2016DockerExecutor(String dockerImage) {
@@ -32,42 +29,6 @@ public final class Mind2016DockerExecutor extends DockerExecutor implements Sync
         return "docker-mind2016";
     }
 
-    @Override
-    public Map<String, Object> getExecutorConf() {
-        // TODO: Implement this
-        return null;
-    }
-
-    @Override
-    public void setExecutorConf(Map<String, Object> conf) {
-        // TODO: Implement this
-    }
-
-    @Override
-    protected List<String> getArguments() {
-        return Arrays.asList("java", "-jar", "NEEL_Linking.jar", "/data/input", this.kbPath, "/data/output");
-    }
-
-    @Override
-    public void setInputPath(String inputPath) {
-        this.inputPath = inputPath;
-    }
-
-    @Override
-    public String getInputPath() {
-        return inputPath;
-    }
-
-    @Override
-    public void setOutputPath(String outputPath) {
-        this.outputPath = outputPath;
-    }
-
-    @Override
-    public String getOutputPath() {
-        return outputPath;
-    }
-
     public String getKnowledgeBasePath() {
         return this.kbPath;
     }
@@ -76,12 +37,58 @@ public final class Mind2016DockerExecutor extends DockerExecutor implements Sync
         this.kbPath = knowledgeBasePath;
     }
 
+
     @Override
-    protected CreateContainerCmd createContainer(String image, List<String> args) {
-        return super.createContainer(image, args)
-            .withHostConfig(HostConfig.newHostConfig().withBinds(
-                new Bind(this.getInputPath(), new Volume("/data/input")),
-                new Bind(this.getOutputPath(), new Volume("/data/output"))
-            ));
+    protected void validateExecuteArgs(Object... args) {
+        if (args.length != 2) {
+            throw new IllegalArgumentException(
+                String.format("Sync executor expect 2 arguments, %d given", args.length));
+        }
+
+        if (!(args[0] instanceof File && args[1] instanceof File)) {
+            throw new IllegalArgumentException(
+                String.format("Sync executor expect 2 arguments of type File (%s, %s given)",
+                    args[0].getClass(), args[1].getClass()));
+        }
+    }
+
+    @Override
+    protected String[] buildContainerCommand(String... additionalArgs) {
+        List<String> cmd = Arrays.asList("java", "-jar", "NEEL_Linking.jar");
+        cmd.addAll(Arrays.asList(additionalArgs));
+
+        return cmd.toArray(new String[0]);
+    }
+
+    @Override
+    protected String[] prepareAdditionalContainerArgs(Object... additionalArgs) {
+        return new String[] {
+            "/data/input",
+            this.getKnowledgeBasePath(),
+            "/data/output"
+        };
+    }
+
+    private File getInputDirectoryFromArgs(Object... args) {
+        return ((File)args[0]);
+    }
+
+    private File getOutputDirectoryFromArgs(Object... args) {
+        return ((File)args[1]);
+    }
+
+    @Override
+    protected void configureContainer(CreateContainerCmd containerCmd, Object... args) {
+        this.setAutoRemove(containerCmd, true);
+        this.bindVolumes(
+            containerCmd,
+            new Bind(this.getInputDirectoryFromArgs(args).getAbsolutePath(), new Volume("/data/input")),
+            new Bind(this.getOutputDirectoryFromArgs(args).getAbsolutePath(), new Volume("/data/output"))
+        );
+    }
+
+    @Override
+    public String execute(File inputFile, File outputFile) {
+        return this.execute((Object)inputFile, outputFile);
     }
 }
