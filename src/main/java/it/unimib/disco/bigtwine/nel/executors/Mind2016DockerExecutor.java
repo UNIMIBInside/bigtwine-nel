@@ -2,16 +2,15 @@ package it.unimib.disco.bigtwine.nel.executors;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.model.Bind;
-import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Volume;
-import it.unimib.disco.bigtwine.commons.executors.DockerExecutor;
 import it.unimib.disco.bigtwine.commons.executors.SyncFileExecutor;
+import it.unimib.disco.bigtwine.commons.executors.docker.DockerSyncExecutor;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-public final class Mind2016DockerExecutor extends DockerExecutor implements SyncFileExecutor {
+public final class Mind2016DockerExecutor extends DockerSyncExecutor implements SyncFileExecutor {
     public static final String DOCKER_IMAGE = "bigtwine-tool-nel";
 
     private String kbPath;
