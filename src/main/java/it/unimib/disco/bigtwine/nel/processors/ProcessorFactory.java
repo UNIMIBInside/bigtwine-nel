@@ -1,8 +1,11 @@
 package it.unimib.disco.bigtwine.nel.processors;
 
+import it.unimib.disco.bigtwine.commons.executors.SyncFileExecutor;
 import it.unimib.disco.bigtwine.config.ApplicationProperties;
 import it.unimib.disco.bigtwine.nel.Linker;
 import it.unimib.disco.bigtwine.nel.executors.ExecutorFactory;
+import it.unimib.disco.bigtwine.nel.parsers.OutputParserBuilder;
+import it.unimib.disco.bigtwine.nel.producers.InputProducerBuilder;
 import org.springframework.beans.factory.FactoryBean;
 
 
@@ -25,9 +28,11 @@ public class ProcessorFactory implements FactoryBean<Processor> {
         return this.linker;
     }
 
-    protected Processor getMind2016Processor() {
-        /// TODO: Implement this
-        return null;
+    protected Processor getMind2016Processor() throws Exception {
+        return new Mind2016Processor(
+            (SyncFileExecutor) this.executorFactory.getExecutor(this.linker),
+            InputProducerBuilder.getDefaultBuilder(),
+            OutputParserBuilder.getDefaultBuilder());
     }
 
     public Processor getProcessor() throws Exception {
