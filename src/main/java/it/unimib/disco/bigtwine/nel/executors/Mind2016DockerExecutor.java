@@ -36,7 +36,6 @@ public final class Mind2016DockerExecutor extends DockerSyncExecutor implements 
         this.kbPath = knowledgeBasePath;
     }
 
-
     @Override
     protected void validateExecuteArgs(Object... args) {
         if (args.length != 2) {
