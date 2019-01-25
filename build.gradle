@@ -46,21 +46,22 @@ dependencyManagement {
 
 defaultTasks 'bootRun'
 
-group = 'it.unimib.disco.bigtwine'
+group = 'it.unimib.disco.bigtwine.services'
 version = '0.0.1-SNAPSHOT'
 
 description = ''
 
 bootWar {
-   mainClassName = 'it.unimib.disco.bigtwine.NelApp'
+   mainClassName = 'it.unimib.disco.bigtwine.services.nel.NelApp'
 }
 
 war {
-
+    enabled = true
+    classifier = 'original'
 }
 
 springBoot {
-    mainClassName = 'it.unimib.disco.bigtwine.NelApp'
+    mainClassName = 'it.unimib.disco.bigtwine.services.nel.NelApp'
     buildInfo()
 }
 
@@ -171,9 +172,7 @@ dependencies {
     compile "org.springframework.cloud:spring-cloud-starter-netflix-ribbon"
     compile "org.springframework.cloud:spring-cloud-starter-netflix-hystrix"
     compile "org.springframework.retry:spring-retry"
-    compile ("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client") {
-        exclude group: 'javax.ws.rs', module: 'jsr311-api'
-    }
+    compile "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
     compile "org.springframework.cloud:spring-cloud-starter-config"
     compile "org.springframework.cloud:spring-cloud-starter-openfeign"
     compile "org.springframework.boot:spring-boot-starter-cloud-connectors"
@@ -219,6 +218,7 @@ wrapper {
 task stage(dependsOn: 'bootWar') {
 }
 
+bootWar.dependsOn war
 compileJava.dependsOn processResources
 processResources.dependsOn cleanResources,bootBuildInfo
 bootBuildInfo.mustRunAfter cleanResources
