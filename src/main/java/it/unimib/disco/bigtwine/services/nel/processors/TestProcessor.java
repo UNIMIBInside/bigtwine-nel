@@ -15,7 +15,7 @@ public class TestProcessor implements Processor {
     public static final Linker linker = Linker.test;
 
     private ProcessorListener<LinkedTweet> processorListener;
-    
+
     private String[] links = new String[] {
         "http://dbpedia.org/resource/Lamar_Odom",
         "http://dbpedia.org/resource/Dow_Jones_&_Company",
@@ -72,7 +72,7 @@ public class TestProcessor implements Processor {
     public boolean process(String tag, RecognizedTweet[] items) {
         List<LinkedTweet> linkedTweets = new ArrayList<>();
         for (RecognizedTweet tweet : items) {
-            int count = new Random().nextInt(4);
+            int count = tweet.getEntities().length > 0 ? new Random().nextInt(tweet.getEntities().length) : 0;
             LinkedTweet lt = new LinkedTweet(tweet.getId(), null);
             List<LinkedTweet.Entity> entities = new ArrayList<>();
             for (int i = 0; i < count; ++i)  {
