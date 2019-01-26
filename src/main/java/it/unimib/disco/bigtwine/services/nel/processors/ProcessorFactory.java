@@ -35,6 +35,10 @@ public class ProcessorFactory implements FactoryBean<Processor> {
             OutputParserBuilder.getDefaultBuilder());
     }
 
+    protected Processor getTestProcessor() throws Exception {
+        return new TestProcessor();
+    }
+
     public Processor getProcessor() throws Exception {
         if (this.linker == null) {
             throw new IllegalArgumentException("linker not set");
@@ -43,6 +47,8 @@ public class ProcessorFactory implements FactoryBean<Processor> {
         switch (linker) {
             case mind2016:
                 return this.getMind2016Processor();
+            case test:
+                return this.getTestProcessor();
             default:
                 return null;
         }
@@ -71,6 +77,8 @@ public class ProcessorFactory implements FactoryBean<Processor> {
         switch (linker) {
             case mind2016:
                 return Mind2016Processor.class;
+            case test:
+                return TestProcessor.class;
             default:
                 return null;
         }

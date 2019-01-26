@@ -3,7 +3,7 @@ package it.unimib.disco.bigtwine.services.nel;
 import javax.validation.constraints.NotNull;
 
 public enum Linker {
-    mind2016;
+    mind2016, test;
 
     private static Linker defaultLinker= mind2016;
 
