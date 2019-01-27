@@ -1,8 +1,10 @@
 package it.unimib.disco.bigtwine.services.nel.processors;
 
 import it.unimib.disco.bigtwine.commons.executors.Executor;
+import it.unimib.disco.bigtwine.commons.models.LinkedEntity;
 import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
 import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
+import it.unimib.disco.bigtwine.commons.models.TextRange;
 import it.unimib.disco.bigtwine.commons.processors.ProcessorListener;
 import it.unimib.disco.bigtwine.services.nel.Linker;
 
@@ -74,17 +76,17 @@ public class TestProcessor implements Processor {
         for (RecognizedTweet tweet : items) {
             int count = tweet.getEntities().length > 0 ? new Random().nextInt(tweet.getEntities().length) : 0;
             LinkedTweet lt = new LinkedTweet(tweet.getId(), null);
-            List<LinkedTweet.Entity> entities = new ArrayList<>();
+            List<LinkedEntity> entities = new ArrayList<>();
             for (int i = 0; i < count; ++i)  {
-                entities.add(new LinkedTweet.Entity(
-                    new LinkedTweet.EntityTextRange(0, 1),
+                entities.add(new LinkedEntity(
+                    new TextRange(0, 1),
                     this.links[new Random().nextInt(this.links.length)],
                     1.0f,
                     "test",
                     false
                 ));
             }
-            lt.setEntities((LinkedTweet.Entity[])entities.toArray());
+            lt.setEntities(entities.toArray(new LinkedEntity[0]));
             linkedTweets.add(lt);
         }
         this.processorListener.onProcessed(this, tag, linkedTweets.toArray(new LinkedTweet[0]));

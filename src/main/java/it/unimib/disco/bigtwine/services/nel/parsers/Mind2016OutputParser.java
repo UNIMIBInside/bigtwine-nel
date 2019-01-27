@@ -3,7 +3,9 @@ package it.unimib.disco.bigtwine.services.nel.parsers;
 import it.unimib.disco.bigtwine.commons.csv.CSVFactory;
 import it.unimib.disco.bigtwine.commons.csv.CSVReader;
 import it.unimib.disco.bigtwine.commons.csv.CSVRecord;
+import it.unimib.disco.bigtwine.commons.models.LinkedEntity;
 import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
+import it.unimib.disco.bigtwine.commons.models.TextRange;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -48,7 +50,7 @@ public final class Mind2016OutputParser implements OutputParser {
         return true;
     }
 
-    private LinkedTweet.Entity parseEntity(CSVRecord record) {
+    private LinkedEntity parseEntity(CSVRecord record) {
         if (record.size() == 0) return null;
 
         try {
@@ -59,8 +61,8 @@ public final class Mind2016OutputParser implements OutputParser {
             String category = record.get(5).trim();
             boolean isNil = linkOrNilCluster.toUpperCase().startsWith("NIL");
 
-            return new LinkedTweet.Entity(
-                new LinkedTweet.EntityTextRange(posStart, posEnd),
+            return new LinkedEntity(
+                new TextRange(posStart, posEnd),
                 linkOrNilCluster,
                 confidence,
                 category,
@@ -88,7 +90,7 @@ public final class Mind2016OutputParser implements OutputParser {
             return null;
         }
 
-        List<LinkedTweet.Entity> entities = new ArrayList<>();
+        List<LinkedEntity> entities = new ArrayList<>();
 
         while(next != null) {
             CSVRecord current = next;
@@ -113,14 +115,14 @@ public final class Mind2016OutputParser implements OutputParser {
                 next = csv.next();
             }
 
-            LinkedTweet.Entity entity = this.parseEntity(current);
+            LinkedEntity entity = this.parseEntity(current);
 
             if (entity != null) {
                 entities.add(entity);
             }
         }
 
-        this.nextTweet.setEntities(entities.toArray(new LinkedTweet.Entity[0]));
+        this.nextTweet.setEntities(entities.toArray(new LinkedEntity[0]));
 
         if (this.isValidTweet(this.nextTweet)) {
             return this.nextTweet;
