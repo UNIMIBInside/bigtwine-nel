@@ -2,7 +2,7 @@ package it.unimib.disco.bigtwine.services.nel.service;
 
 import it.unimib.disco.bigtwine.commons.messaging.NelRequestMessage;
 import it.unimib.disco.bigtwine.commons.messaging.NelResponseMessage;
-import it.unimib.disco.bigtwine.commons.models.Counter;
+import it.unimib.disco.bigtwine.commons.messaging.RequestCounter;
 import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
 import it.unimib.disco.bigtwine.commons.processors.GenericProcessor;
 import it.unimib.disco.bigtwine.commons.processors.ProcessorListener;
@@ -33,7 +33,7 @@ public class NelService implements ProcessorListener<LinkedTweet> {
     private ProcessorFactory processorFactory;
     private KafkaTemplate<Integer, String> kafka;
     private Map<Linker, Processor> processors = new HashMap<>();
-    private Map<String, Counter<NelRequestMessage>> requests = new HashMap<>();
+    private Map<String, RequestCounter<NelRequestMessage>> requests = new HashMap<>();
 
     public NelService(
         NelResponsesProducerChannel channel,
@@ -107,7 +107,7 @@ public class NelService implements ProcessorListener<LinkedTweet> {
         }
 
         String tag = this.getNewRequestTag();
-        this.requests.put(tag, new Counter<>(request, request.getTweets().length));
+        this.requests.put(tag, new RequestCounter<>(request, request.getTweets().length));
         processor.process(tag, request.getTweets());
     }
 
@@ -117,7 +117,7 @@ public class NelService implements ProcessorListener<LinkedTweet> {
             return;
         }
 
-        Counter<NelRequestMessage> requestCounter = this.requests.get(tag);
+        RequestCounter<NelRequestMessage> requestCounter = this.requests.get(tag);
         requestCounter.decrement(tweets.length);
         NelRequestMessage request = requestCounter.get();
         if (!requestCounter.hasMore()) {
