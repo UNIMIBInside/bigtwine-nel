@@ -1,6 +1,6 @@
 package it.unimib.disco.bigtwine.services.nel.producers;
 
-import it.unimib.disco.bigtwine.commons.models.RecognizedTweet.Entity;
+import it.unimib.disco.bigtwine.commons.models.NamedEntity;
 import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
 import it.unimib.disco.bigtwine.services.nel.Linker;
 import it.unimib.disco.bigtwine.services.nel.producers.InputProducer;
@@ -23,7 +23,7 @@ public class Mind2016InputProducerTest {
             .setWriter(writer)
             .build();
 
-        Entity entity1 = new Entity();
+        NamedEntity entity1 = new NamedEntity();
         entity1.setValue("Lamar Odom");
         entity1.setLabel("person");
         entity1.setProbability(5.0f);
@@ -31,7 +31,7 @@ public class Mind2016InputProducerTest {
         RecognizedTweet tweet1 = new RecognizedTweet();
         tweet1.setId("93314579924393984");
         tweet1.setText("Lamar Odom's Car Accident Claims Life Of A 15 Year Old Boy http://on.vh1.com/pJObAI");
-        tweet1.setEntities(new Entity[] {
+        tweet1.setEntities(new NamedEntity[] {
             entity1
         });
 
@@ -54,12 +54,12 @@ public class Mind2016InputProducerTest {
             .setWriter(writer)
             .build();
 
-        Entity entity1 = new Entity();
+        NamedEntity entity1 = new NamedEntity();
         entity1.setValue("RB Willis McGahee");
         entity1.setLabel("other");
         entity1.setProbability(5.0f);
 
-        Entity entity2 = new Entity();
+        NamedEntity entity2 = new NamedEntity();
         entity2.setValue("Denver");
         entity2.setLabel("geo-loc");
         entity2.setProbability(6.0f);
@@ -67,7 +67,7 @@ public class Mind2016InputProducerTest {
         RecognizedTweet tweet1 = new RecognizedTweet();
         tweet1.setId("96976835820269568");
         tweet1.setText("RB Willis McGahee reaches agreement with Denver on a 3-yr deal for $7,500,000, including $3 million guaranteed.");
-        tweet1.setEntities(new Entity[] {
+        tweet1.setEntities(new NamedEntity[] {
             entity1, entity2
         });
 
@@ -91,17 +91,17 @@ public class Mind2016InputProducerTest {
             .setWriter(writer)
             .build();
 
-        Entity entity1 = new Entity();
+        NamedEntity entity1 = new NamedEntity();
         entity1.setValue("RB Willis McGahee");
         entity1.setLabel("other");
         entity1.setProbability(5.0f);
 
-        Entity entity2 = new Entity();
+        NamedEntity entity2 = new NamedEntity();
         entity2.setValue("Denver");
         entity2.setLabel("geo-loc");
         entity2.setProbability(6.0f);
 
-        Entity entity3 = new Entity();
+        NamedEntity entity3 = new NamedEntity();
         entity3.setValue("Lamar Odom");
         entity3.setLabel("person");
         entity3.setProbability(5.0f);
@@ -109,14 +109,14 @@ public class Mind2016InputProducerTest {
         RecognizedTweet tweet1 = new RecognizedTweet();
         tweet1.setId("96976835820269568");
         tweet1.setText("RB Willis McGahee reaches agreement with Denver on a 3-yr deal for $7,500,000, including $3 million guaranteed.");
-        tweet1.setEntities(new Entity[] {
+        tweet1.setEntities(new NamedEntity[] {
             entity1, entity2
         });
 
         RecognizedTweet tweet2 = new RecognizedTweet();
         tweet2.setId("93314579924393984");
         tweet2.setText("Lamar Odom's Car Accident Claims Life Of A 15 Year Old Boy http://on.vh1.com/pJObAI");
-        tweet2.setEntities(new Entity[] {
+        tweet2.setEntities(new NamedEntity[] {
             entity3
         });
 
