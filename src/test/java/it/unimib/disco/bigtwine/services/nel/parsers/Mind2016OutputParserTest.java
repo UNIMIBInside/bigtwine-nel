@@ -2,8 +2,6 @@ package it.unimib.disco.bigtwine.services.nel.parsers;
 
 import it.unimib.disco.bigtwine.commons.csv.CSVFactory;
 import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
-import it.unimib.disco.bigtwine.services.nel.parsers.Mind2016OutputParser;
-import it.unimib.disco.bigtwine.services.nel.parsers.OutputParser;
 import org.junit.Test;
 
 import java.io.StringReader;

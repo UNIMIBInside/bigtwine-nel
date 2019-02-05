@@ -3,8 +3,6 @@ package it.unimib.disco.bigtwine.services.nel.producers;
 import it.unimib.disco.bigtwine.commons.models.NamedEntity;
 import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
 import it.unimib.disco.bigtwine.services.nel.Linker;
-import it.unimib.disco.bigtwine.services.nel.producers.InputProducer;
-import it.unimib.disco.bigtwine.services.nel.producers.InputProducerBuilder;
 import org.junit.Test;
 
 import java.io.IOException;
