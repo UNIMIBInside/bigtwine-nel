@@ -16,7 +16,50 @@ public class ApplicationProperties {
     private final Processors processors = new Processors();
 
     public static class Processors {
+        private final Mind2016 mind2016 = new Mind2016();
 
+        public Mind2016 getMind2016() {
+            return mind2016;
+        }
+
+        public static class Mind2016 {
+            private String workingDirectory = ApplicationDefaults.Processors.Mind2016.workingDirectory;
+            private boolean useTmpWorkingDirectory = ApplicationDefaults.Processors.Mind2016.useTmpWorkingDirectory;
+            private String fileMonitorSuffixFilter = ApplicationDefaults.Processors.Mind2016.fileMonitorSuffixFilter;
+            private String fileMonitorSuffixExclusion = ApplicationDefaults.Processors.Mind2016.fileMonitorSuffixFilter;
+
+            public String getWorkingDirectory() {
+                return workingDirectory;
+            }
+
+            public void setWorkingDirectory(String workingDirectory) {
+                this.workingDirectory = workingDirectory;
+            }
+
+            public boolean isUseTmpWorkingDirectory() {
+                return useTmpWorkingDirectory;
+            }
+
+            public void setUseTmpWorkingDirectory(boolean useTmpWorkingDirectory) {
+                this.useTmpWorkingDirectory = useTmpWorkingDirectory;
+            }
+
+            public String getFileMonitorSuffixFilter() {
+                return fileMonitorSuffixFilter;
+            }
+
+            public void setFileMonitorSuffixFilter(String fileMonitorSuffixFilter) {
+                this.fileMonitorSuffixFilter = fileMonitorSuffixFilter;
+            }
+
+            public String getFileMonitorSuffixExclusion() {
+                return fileMonitorSuffixExclusion;
+            }
+
+            public void setFileMonitorSuffixExclusion(String fileMonitorSuffixExclusion) {
+                this.fileMonitorSuffixExclusion = fileMonitorSuffixExclusion;
+            }
+        }
     }
     public static class Executors {
 

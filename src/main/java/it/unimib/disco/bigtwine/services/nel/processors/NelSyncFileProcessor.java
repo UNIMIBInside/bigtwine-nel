@@ -17,50 +17,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public abstract class NelSyncFileProcessor implements Processor, SyncFileProcessor<RecognizedTweet> {
+public abstract class NelSyncFileProcessor extends NelFileProcessor implements SyncFileProcessor<RecognizedTweet> {
 
     protected SyncFileExecutor executor;
-    protected OutputParserBuilder outputParserBuilder;
-    protected InputProducerBuilder inputProducerBuilder;
-    protected String processorId;
-    protected File workingDirectory;
-    protected File inputDirectory;
-    protected File outputDirectory;
-    protected ProcessorListener<LinkedTweet> processorListener;
 
-    public NelSyncFileProcessor(SyncFileExecutor executor, InputProducerBuilder inputProducerBuilder, OutputParserBuilder outputParserBuilder) {
+    public NelSyncFileProcessor(InputProducerBuilder inputProducerBuilder, OutputParserBuilder outputParserBuilder, SyncFileExecutor executor) {
+        super(inputProducerBuilder, outputParserBuilder);
         this.setExecutor(executor);
-        this.setInputProducerBuilder(inputProducerBuilder);
-        this.setOutputParserBuilder(outputParserBuilder);
-    }
-
-    @Override
-    public File getOutputDirectory() {
-        return outputDirectory;
-    }
-
-    @Override
-    public void setOutputDirectory(File outputDirectory) {
-        this.outputDirectory = outputDirectory;
-    }
-
-
-    public InputProducerBuilder getInputProducerBuilder() {
-        return this.inputProducerBuilder;
-    }
-
-    public void setInputProducerBuilder(InputProducerBuilder producerBuilder) {
-        this.inputProducerBuilder = producerBuilder
-            .setLinker(this.getLinker());
-    }
-
-    public OutputParserBuilder getOutputParserBuilder() {
-        return this.outputParserBuilder;
-    }
-
-    public void setOutputParserBuilder(OutputParserBuilder outputParserBuilder) {
-        this.outputParserBuilder = outputParserBuilder
-            .setLinker(this.getLinker());
     }
 
     @Override
@@ -87,47 +50,12 @@ public abstract class NelSyncFileProcessor implements Processor, SyncFileProcess
     }
 
     @Override
-    public File getInputDirectory() {
-        return this.inputDirectory;
-    }
-
-    @Override
-    public void setInputDirectory(File inputDirectory) {
-        this.inputDirectory = inputDirectory;
-    }
-
-    @Override
-    public File getWorkingDirectory() {
-        return this.workingDirectory;
-    }
-
-    @Override
-    public void setWorkingDirectory(File workingDirectory) {
-        this.workingDirectory = workingDirectory;
-    }
-
-    @Override
-    public String getProcessorId() {
-        return this.processorId;
-    }
-
-    @Override
-    public void setListener(ProcessorListener<LinkedTweet> listener) {
-        this.processorListener = listener;
-    }
-
-    @Override
     public boolean configureProcessor() {
         this.processorId = RandomStringUtils.randomAlphanumeric(16);
         this.inputDirectory = Paths.get(this.getWorkingDirectory().toString(), this.getProcessorId(), "input").toFile();
         this.outputDirectory = Paths.get(this.getWorkingDirectory().toString(), this.getProcessorId(), "output").toFile();
 
         return this.setupWorkingDirectory();
-    }
-
-    @Override
-    public boolean process(String tag, RecognizedTweet tweet) {
-        return this.process(tag, new RecognizedTweet[]{tweet});
     }
 
     @Override
@@ -158,53 +86,5 @@ public abstract class NelSyncFileProcessor implements Processor, SyncFileProcess
         this.processOutputFile(outputFile);
 
         return true;
-    }
-
-    @Override
-    public boolean generateInputFile(File inputFile, RecognizedTweet[] tweets) {
-        FileWriter fileWriter;
-
-        try {
-            fileWriter = new FileWriter(inputFile);
-        } catch (IOException e) {
-            return false;
-        }
-
-        InputProducer inputProducer = this.inputProducerBuilder
-            .setLinker(this.getLinker())
-            .setWriter(fileWriter)
-            .build();
-
-        if (inputProducer == null) {
-            return false;
-        }
-
-        try {
-            inputProducer.append(tweets);
-            inputProducer.close();
-        } catch (IOException e) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public void processOutputFile(File outputFile) {
-        OutputParser outputParser = this.outputParserBuilder
-            .setLinker(this.getLinker())
-            .setInput(outputFile)
-            .build();
-
-        if (outputParser == null) {
-            return;
-        }
-
-        String tag = FilenameUtils.removeExtension(outputFile.getName());
-        LinkedTweet[] tweets = outputParser.items();
-
-        if (!tag.isEmpty() && this.processorListener != null && tweets != null) {
-            this.processorListener.onProcessed(this, tag, tweets);
-        }
     }
 }

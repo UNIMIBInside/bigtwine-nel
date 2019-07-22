@@ -1,5 +1,6 @@
 package it.unimib.disco.bigtwine.services.nel.processors;
 
+import it.unimib.disco.bigtwine.commons.executors.NopExecutor;
 import it.unimib.disco.bigtwine.commons.executors.SyncFileExecutor;
 import it.unimib.disco.bigtwine.services.nel.config.ApplicationProperties;
 import it.unimib.disco.bigtwine.services.nel.Linker;
@@ -7,6 +8,9 @@ import it.unimib.disco.bigtwine.services.nel.executors.ExecutorFactory;
 import it.unimib.disco.bigtwine.services.nel.parsers.OutputParserBuilder;
 import it.unimib.disco.bigtwine.services.nel.producers.InputProducerBuilder;
 import org.springframework.beans.factory.FactoryBean;
+
+import java.io.File;
+import java.nio.file.Files;
 
 
 public class ProcessorFactory implements FactoryBean<Processor> {
@@ -28,11 +32,37 @@ public class ProcessorFactory implements FactoryBean<Processor> {
         return this.linker;
     }
 
-    protected Processor getMind2016Processor() throws Exception {
-        return new Mind2016Processor(
+    protected Processor getMind2016SyncProcessor() throws Exception {
+        return new Mind2016SyncProcessor(
             (SyncFileExecutor) this.executorFactory.getExecutor(this.linker),
             InputProducerBuilder.getDefaultBuilder(),
             OutputParserBuilder.getDefaultBuilder());
+    }
+
+    protected Processor getMind2016PerpetualProcessor() throws Exception {
+        Mind2016PerpetualProcessor processor = new Mind2016PerpetualProcessor(
+            InputProducerBuilder.getDefaultBuilder(),
+            OutputParserBuilder.getDefaultBuilder(),
+            new NopExecutor());
+
+        final String suffixFilter = this.processorsProps.getMind2016().getFileMonitorSuffixFilter();
+        final String suffixExclusion = this.processorsProps.getMind2016().getFileMonitorSuffixFilter();
+        final boolean useTmpWD = this.processorsProps.getMind2016().isUseTmpWorkingDirectory();
+        final String wds = this.processorsProps.getMind2016().getWorkingDirectory();
+
+        File wd;
+        if (useTmpWD || wds == null) {
+            wd = Files.createTempDirectory("nel").toFile();
+        }else {
+            wd = new File(wds);
+        }
+
+        processor.setWorkingDirectory(wd);
+        processor.setMonitorSuffixFilter(suffixFilter);
+        processor.setMonitorSuffixExclusion(suffixExclusion);
+        processor.setMonitorFilesOnly(true);
+
+        return processor;
     }
 
     protected Processor getTestProcessor() throws Exception {
@@ -46,7 +76,7 @@ public class ProcessorFactory implements FactoryBean<Processor> {
 
         switch (linker) {
             case mind2016:
-                return this.getMind2016Processor();
+                return this.getMind2016PerpetualProcessor();
             case test:
                 return this.getTestProcessor();
             default:
@@ -76,7 +106,7 @@ public class ProcessorFactory implements FactoryBean<Processor> {
 
         switch (linker) {
             case mind2016:
-                return Mind2016Processor.class;
+                return Mind2016SyncProcessor.class;
             case test:
                 return TestProcessor.class;
             default:

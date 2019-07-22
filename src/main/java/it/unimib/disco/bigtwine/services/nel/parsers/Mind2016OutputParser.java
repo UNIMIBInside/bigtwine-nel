@@ -6,6 +6,9 @@ import it.unimib.disco.bigtwine.commons.csv.CSVRecord;
 import it.unimib.disco.bigtwine.commons.models.LinkedEntity;
 import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
 import it.unimib.disco.bigtwine.commons.models.TextRange;
+import it.unimib.disco.bigtwine.commons.models.dto.LinkedEntityDTO;
+import it.unimib.disco.bigtwine.commons.models.dto.LinkedTweetDTO;
+import it.unimib.disco.bigtwine.commons.models.dto.TextRangeDTO;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -61,8 +64,8 @@ public final class Mind2016OutputParser implements OutputParser {
             String category = record.get(5).trim();
             boolean isNil = linkOrNilCluster.toUpperCase().startsWith("NIL");
 
-            return new LinkedEntity(
-                new TextRange(posStart, posEnd),
+            return new LinkedEntityDTO(
+                new TextRangeDTO(posStart, posEnd),
                 linkOrNilCluster,
                 confidence,
                 category,
@@ -77,7 +80,7 @@ public final class Mind2016OutputParser implements OutputParser {
         Iterator<CSVRecord> csv = this.getCsvReader().iterator();
 
         if (this.nextTweet == null) {
-            this.nextTweet = new LinkedTweet();
+            this.nextTweet = new LinkedTweetDTO();
         }
 
         CSVRecord next;

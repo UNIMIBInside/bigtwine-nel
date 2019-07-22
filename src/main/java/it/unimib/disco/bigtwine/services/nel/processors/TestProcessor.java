@@ -5,6 +5,9 @@ import it.unimib.disco.bigtwine.commons.models.LinkedEntity;
 import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
 import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
 import it.unimib.disco.bigtwine.commons.models.TextRange;
+import it.unimib.disco.bigtwine.commons.models.dto.LinkedEntityDTO;
+import it.unimib.disco.bigtwine.commons.models.dto.LinkedTweetDTO;
+import it.unimib.disco.bigtwine.commons.models.dto.TextRangeDTO;
 import it.unimib.disco.bigtwine.commons.processors.ProcessorListener;
 import it.unimib.disco.bigtwine.services.nel.Linker;
 
@@ -75,11 +78,11 @@ public class TestProcessor implements Processor {
         List<LinkedTweet> linkedTweets = new ArrayList<>();
         for (RecognizedTweet tweet : items) {
             int count = tweet.getEntities().length > 0 ? new Random().nextInt(tweet.getEntities().length) : 0;
-            LinkedTweet lt = new LinkedTweet(tweet.getId(), null);
+            LinkedTweet lt = new LinkedTweetDTO(tweet.getId(), null);
             List<LinkedEntity> entities = new ArrayList<>();
             for (int i = 0; i < count; ++i)  {
-                entities.add(new LinkedEntity(
-                    new TextRange(0, 1),
+                entities.add(new LinkedEntityDTO(
+                    new TextRangeDTO(0, 1),
                     this.links[new Random().nextInt(this.links.length)],
                     1.0f,
                     "test",
