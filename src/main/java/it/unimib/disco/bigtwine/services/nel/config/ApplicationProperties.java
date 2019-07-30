@@ -26,7 +26,7 @@ public class ApplicationProperties {
             private String workingDirectory = ApplicationDefaults.Processors.Mind2016.workingDirectory;
             private boolean useTmpWorkingDirectory = ApplicationDefaults.Processors.Mind2016.useTmpWorkingDirectory;
             private String fileMonitorSuffixFilter = ApplicationDefaults.Processors.Mind2016.fileMonitorSuffixFilter;
-            private String fileMonitorSuffixExclusion = ApplicationDefaults.Processors.Mind2016.fileMonitorSuffixFilter;
+            private String fileMonitorSuffixExclusion = ApplicationDefaults.Processors.Mind2016.fileMonitorSuffixExclusion;
 
             public String getWorkingDirectory() {
                 return workingDirectory;
