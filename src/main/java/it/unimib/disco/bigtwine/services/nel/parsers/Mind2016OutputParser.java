@@ -125,7 +125,7 @@ public final class Mind2016OutputParser implements OutputParser {
             }
         }
 
-        this.nextTweet.setEntities(entities.toArray(new LinkedEntity[0]));
+        this.nextTweet.setEntities(entities.toArray(new LinkedEntityDTO[0]));
 
         if (this.isValidTweet(this.nextTweet)) {
             return this.nextTweet;

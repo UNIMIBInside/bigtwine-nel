@@ -9,6 +9,8 @@ import it.unimib.disco.bigtwine.services.nel.parsers.OutputParserBuilder;
 import it.unimib.disco.bigtwine.services.nel.producers.InputProducer;
 import it.unimib.disco.bigtwine.services.nel.producers.InputProducerBuilder;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -16,6 +18,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public abstract class NelFileProcessor implements Processor, FileProcessor<RecognizedTweet> {
+
+    private final Logger log = LoggerFactory.getLogger(NelFileProcessor.class);
 
     protected OutputParserBuilder outputParserBuilder;
     protected InputProducerBuilder inputProducerBuilder;
@@ -95,10 +99,10 @@ public abstract class NelFileProcessor implements Processor, FileProcessor<Recog
     }
 
     @Override
-    public boolean generateInputFile(File inputFile, RecognizedTweet[] tweets) {
+    public boolean generateInputFile(File file, RecognizedTweet[] tweets) {
         File tmpFile;
         try {
-            tmpFile = File.createTempFile(inputFile.getName(), ".tmp", inputFile.getAbsoluteFile().getParentFile());
+            tmpFile = File.createTempFile(file.getName(), ".tmp", file.getAbsoluteFile().getParentFile());
         } catch (IOException e) {
             return false;
         }
@@ -107,6 +111,7 @@ public abstract class NelFileProcessor implements Processor, FileProcessor<Recog
         try {
             fileWriter = new FileWriter(tmpFile);
         } catch (IOException e) {
+            log.debug("Cannot generate file writer: {}", e.getMessage());
             return false;
         }
 
@@ -123,12 +128,14 @@ public abstract class NelFileProcessor implements Processor, FileProcessor<Recog
             inputProducer.append(tweets);
             inputProducer.close();
         } catch (IOException e) {
+            log.debug("Cannot append tweets to input producer: {}", e.getMessage());
             return false;
         }
 
         try {
-            Files.move(tmpFile.toPath(), inputFile.toPath());
+            Files.move(tmpFile.toPath(), file.toPath());
         } catch (IOException | SecurityException e) {
+            log.debug("Cannot move generated input file to destination: {}", e.getMessage());
             return false;
         }
 

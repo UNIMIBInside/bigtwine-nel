@@ -1,12 +1,11 @@
 package it.unimib.disco.bigtwine.services.nel.producers;
 
 import it.unimib.disco.bigtwine.services.nel.Linker;
-import javafx.util.Builder;
 
 import java.io.IOException;
 import java.io.Writer;
 
-public class InputProducerBuilder implements Builder<InputProducer> {
+public class InputProducerBuilder {
     private Linker linker;
 
     private Writer writer;
@@ -33,7 +32,6 @@ public class InputProducerBuilder implements Builder<InputProducer> {
         return writer;
     }
 
-    @Override
     public InputProducer build() {
         if (this.linker == null) {
             return null;

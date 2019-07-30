@@ -115,33 +115,8 @@ public abstract class NelPerpetualFileProcessor extends NelFileProcessor impleme
     }
 
     @Override
-    public boolean process(String tag, RecognizedTweet[] items) {
-        File tmpFile;
-        try {
-            tmpFile = File.createTempFile(tag, ".tmp");
-        } catch (IOException e) {
-            return false;
-        }
-
+    public boolean process(String tag, RecognizedTweet[] tweets) {
         File inputFile = this.makeInputFile(tag);
-        File outputFile = this.makeOutputFile(tag);
-
-        boolean res = this.generateInputFile(tmpFile, items);
-
-        if (!res) {
-            return false;
-        }
-
-        try {
-            if (!outputFile.createNewFile()) {
-                return false;
-            }
-        } catch (IOException | SecurityException e) {
-            return false;
-        }
-
-        this.processOutputFile(outputFile);
-
-        return true;
+        return this.generateInputFile(inputFile, tweets);
     }
 }

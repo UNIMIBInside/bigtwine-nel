@@ -2,11 +2,10 @@ package it.unimib.disco.bigtwine.services.nel.parsers;
 
 import it.unimib.disco.bigtwine.commons.csv.CSVFactory;
 import it.unimib.disco.bigtwine.services.nel.Linker;
-import javafx.util.Builder;
 
 import java.io.*;
 
-public class OutputParserBuilder implements Builder<OutputParser> {
+public class OutputParserBuilder {
     private Linker linker;
 
     private Reader reader;
@@ -46,7 +45,6 @@ public class OutputParserBuilder implements Builder<OutputParser> {
         return this;
     }
 
-    @Override
     public OutputParser build() {
         if (this.linker == null) {
             return null;

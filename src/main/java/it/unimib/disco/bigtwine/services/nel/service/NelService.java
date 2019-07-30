@@ -4,6 +4,7 @@ import it.unimib.disco.bigtwine.commons.messaging.NelRequestMessage;
 import it.unimib.disco.bigtwine.commons.messaging.NelResponseMessage;
 import it.unimib.disco.bigtwine.commons.messaging.RequestCounter;
 import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
+import it.unimib.disco.bigtwine.commons.models.dto.LinkedTweetDTO;
 import it.unimib.disco.bigtwine.commons.processors.GenericProcessor;
 import it.unimib.disco.bigtwine.commons.processors.ProcessorListener;
 import it.unimib.disco.bigtwine.services.nel.messaging.NelRequestsConsumerChannel;
@@ -20,6 +21,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -126,7 +128,7 @@ public class NelService implements ProcessorListener<LinkedTweet> {
 
         NelResponseMessage response = new NelResponseMessage();
         response.setLinker(processor.getLinker().toString());
-        response.setTweets(tweets);
+        response.setTweets(Arrays.asList(tweets).toArray(new LinkedTweetDTO[tweets.length]));
         response.setRequestId(tag);
 
         MessageBuilder<NelResponseMessage> messageBuilder = MessageBuilder

@@ -89,7 +89,7 @@ public class TestProcessor implements Processor {
                     false
                 ));
             }
-            lt.setEntities(entities.toArray(new LinkedEntity[0]));
+            lt.setEntities(entities.toArray(new LinkedEntityDTO[0]));
             linkedTweets.add(lt);
         }
         this.processorListener.onProcessed(this, tag, linkedTweets.toArray(new LinkedTweet[0]));
