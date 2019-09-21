@@ -3,12 +3,9 @@ package it.unimib.disco.bigtwine.services.nel.parsers;
 import it.unimib.disco.bigtwine.commons.csv.CSVFactory;
 import it.unimib.disco.bigtwine.commons.csv.CSVReader;
 import it.unimib.disco.bigtwine.commons.csv.CSVRecord;
-import it.unimib.disco.bigtwine.commons.models.LinkedEntity;
-import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
-import it.unimib.disco.bigtwine.commons.models.TextRange;
-import it.unimib.disco.bigtwine.commons.models.dto.LinkedEntityDTO;
-import it.unimib.disco.bigtwine.commons.models.dto.LinkedTweetDTO;
-import it.unimib.disco.bigtwine.commons.models.dto.TextRangeDTO;
+import it.unimib.disco.bigtwine.services.nel.domain.LinkedEntity;
+import it.unimib.disco.bigtwine.services.nel.domain.LinkedText;
+import it.unimib.disco.bigtwine.services.nel.domain.TextRange;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -24,7 +21,7 @@ public final class Mind2016OutputParser implements OutputParser {
     private CSVReader csvReader;
     private static final char delimiter = '\t';
     private CSVRecord nextRecord;
-    private LinkedTweet nextTweet;
+    private LinkedText nextTweet;
 
     public Mind2016OutputParser(CSVFactory csvFactory) {
         this.csvFactory = csvFactory;
@@ -49,7 +46,7 @@ public final class Mind2016OutputParser implements OutputParser {
         return this.csvReader;
     }
 
-    private boolean isValidTweet(LinkedTweet tweet) {
+    private boolean isValidTweet(LinkedText tweet) {
         return true;
     }
 
@@ -64,8 +61,8 @@ public final class Mind2016OutputParser implements OutputParser {
             String category = record.get(5).trim();
             boolean isNil = linkOrNilCluster.toUpperCase().startsWith("NIL");
 
-            return new LinkedEntityDTO(
-                new TextRangeDTO(posStart, posEnd),
+            return new LinkedEntity(
+                new TextRange(posStart, posEnd),
                 linkOrNilCluster,
                 confidence,
                 category,
@@ -76,11 +73,11 @@ public final class Mind2016OutputParser implements OutputParser {
         }
     }
 
-    private LinkedTweet parse() throws IOException {
+    private LinkedText parse() throws IOException {
         Iterator<CSVRecord> csv = this.getCsvReader().iterator();
 
         if (this.nextTweet == null) {
-            this.nextTweet = new LinkedTweetDTO();
+            this.nextTweet = new LinkedText();
         }
 
         CSVRecord next;
@@ -107,11 +104,11 @@ public final class Mind2016OutputParser implements OutputParser {
             }
 
             String tweetId = current.get(0).trim();
-            if (this.nextTweet.getId() == null) {
-                this.nextTweet.setId(tweetId);
+            if (this.nextTweet.getTag() == null) {
+                this.nextTweet.setTag(tweetId);
             }
 
-            if (!tweetId.equals(this.nextTweet.getId())) {
+            if (!tweetId.equals(this.nextTweet.getTag())) {
                 this.nextRecord = current;
                 break;
             }else if (csv.hasNext()) {
@@ -125,7 +122,7 @@ public final class Mind2016OutputParser implements OutputParser {
             }
         }
 
-        this.nextTweet.setEntities(entities.toArray(new LinkedEntityDTO[0]));
+        this.nextTweet.setEntities(entities.toArray(new LinkedEntity[0]));
 
         if (this.isValidTweet(this.nextTweet)) {
             return this.nextTweet;
@@ -135,14 +132,14 @@ public final class Mind2016OutputParser implements OutputParser {
     }
 
     @Override
-    public LinkedTweet[] items() {
-        List<LinkedTweet> tweets = new ArrayList<>();
+    public LinkedText[] items() {
+        List<LinkedText> tweets = new ArrayList<>();
         while (this.hasNext()) {
             tweets.add(this.nextTweet);
             this.nextTweet = null;
         }
 
-        return tweets.toArray(new LinkedTweet[0]);
+        return tweets.toArray(new LinkedText[0]);
     }
 
     @Override
@@ -159,9 +156,9 @@ public final class Mind2016OutputParser implements OutputParser {
     }
 
     @Override
-    public LinkedTweet next() {
+    public LinkedText next() {
         if (this.hasNext()) {
-            LinkedTweet tweet = this.nextTweet;
+            LinkedText tweet = this.nextTweet;
             this.nextTweet = null;
             return tweet;
         }

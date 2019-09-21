@@ -3,10 +3,12 @@ package it.unimib.disco.bigtwine.services.nel.service;
 import it.unimib.disco.bigtwine.commons.messaging.NelRequestMessage;
 import it.unimib.disco.bigtwine.commons.messaging.NelResponseMessage;
 import it.unimib.disco.bigtwine.commons.messaging.RequestCounter;
-import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
-import it.unimib.disco.bigtwine.commons.models.dto.LinkedTweetDTO;
+import it.unimib.disco.bigtwine.commons.messaging.dto.LinkedTextDTO;
+import it.unimib.disco.bigtwine.services.nel.domain.LinkedText;
 import it.unimib.disco.bigtwine.commons.processors.GenericProcessor;
 import it.unimib.disco.bigtwine.commons.processors.ProcessorListener;
+import it.unimib.disco.bigtwine.services.nel.domain.RecognizedText;
+import it.unimib.disco.bigtwine.services.nel.domain.mapper.NelMapper;
 import it.unimib.disco.bigtwine.services.nel.messaging.NelRequestsConsumerChannel;
 import it.unimib.disco.bigtwine.services.nel.messaging.NelResponsesProducerChannel;
 import it.unimib.disco.bigtwine.services.nel.Linker;
@@ -27,7 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
-public class NelService implements ProcessorListener<LinkedTweet> {
+public class NelService implements ProcessorListener<LinkedText> {
 
     private final Logger log = LoggerFactory.getLogger(NelService.class);
 
@@ -109,26 +111,29 @@ public class NelService implements ProcessorListener<LinkedTweet> {
         }
 
         String tag = this.getNewRequestTag();
-        this.requests.put(tag, new RequestCounter<>(request, request.getTweets().length));
-        processor.process(tag, request.getTweets());
+        RecognizedText[] texts = NelMapper.INSTANCE.recognizedTextsFromDTOs(request.getTexts());
+        this.requests.put(tag, new RequestCounter<>(request, texts.length));
+        processor.process(tag, texts);
     }
 
-    private void sendResponse(Processor processor, String tag, LinkedTweet[] tweets) {
+    private void sendResponse(Processor processor, String tag, LinkedText[] texts) {
         if (!this.requests.containsKey(tag)) {
             log.debug("Request tagged '" + tag + "' expired");
             return;
         }
 
         RequestCounter<NelRequestMessage> requestCounter = this.requests.get(tag);
-        requestCounter.decrement(tweets.length);
+        requestCounter.decrement(texts.length);
         NelRequestMessage request = requestCounter.get();
         if (!requestCounter.hasMore()) {
             this.requests.remove(tag);
         }
 
+        LinkedTextDTO[] textDTOs = NelMapper.INSTANCE.dtosFromLinkedTexts(texts);
+
         NelResponseMessage response = new NelResponseMessage();
         response.setLinker(processor.getLinker().toString());
-        response.setTweets(Arrays.asList(tweets).toArray(new LinkedTweetDTO[tweets.length]));
+        response.setTexts(textDTOs);
         response.setRequestId(tag);
 
         MessageBuilder<NelResponseMessage> messageBuilder = MessageBuilder
@@ -151,7 +156,7 @@ public class NelService implements ProcessorListener<LinkedTweet> {
     }
 
     @Override
-    public void onProcessed(GenericProcessor processor, String tag, LinkedTweet[] tweets) {
+    public void onProcessed(GenericProcessor processor, String tag, LinkedText[] tweets) {
         if (!(processor instanceof Processor)) {
             throw new AssertionError("Invalid processor type");
         }

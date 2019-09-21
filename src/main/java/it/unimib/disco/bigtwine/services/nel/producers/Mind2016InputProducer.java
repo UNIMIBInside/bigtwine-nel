@@ -1,7 +1,7 @@
 package it.unimib.disco.bigtwine.services.nel.producers;
 
-import it.unimib.disco.bigtwine.commons.models.NamedEntity;
-import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
+import it.unimib.disco.bigtwine.services.nel.domain.NamedEntity;
+import it.unimib.disco.bigtwine.services.nel.domain.RecognizedText;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -23,8 +23,8 @@ public final class Mind2016InputProducer implements InputProducer {
     }
 
     @Override
-    public void append(RecognizedTweet item) throws IOException {
-        this.writer.append(String.join(colDelimiter, "[#ID#]", item.getId()));
+    public void append(RecognizedText item) throws IOException {
+        this.writer.append(String.join(colDelimiter, "[#ID#]", item.getTag()));
         this.writer.append(lineDelimiter);
         for (NamedEntity entity : item.getEntities()) {
 

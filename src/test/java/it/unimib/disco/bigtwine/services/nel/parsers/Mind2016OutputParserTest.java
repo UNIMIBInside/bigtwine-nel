@@ -1,7 +1,7 @@
 package it.unimib.disco.bigtwine.services.nel.parsers;
 
 import it.unimib.disco.bigtwine.commons.csv.CSVFactory;
-import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
+import it.unimib.disco.bigtwine.services.nel.domain.LinkedText;
 import org.junit.Test;
 
 import java.io.StringReader;
@@ -18,11 +18,11 @@ public class Mind2016OutputParserTest {
         OutputParser parser = new Mind2016OutputParser(CSVFactory.getFactory());
         parser.setReader(reader);
 
-        LinkedTweet[] tweets = parser.items();
+        LinkedText[] tweets = parser.items();
 
         assertEquals(1, tweets.length);
         assertEquals(1, tweets[0].getEntities().length);
-        assertEquals("100259039354687488", tweets[0].getId());
+        assertEquals("100259039354687488", tweets[0].getTag());
         assertEquals(0, tweets[0].getEntity(0).getPosition().getStart());
         assertEquals(7, tweets[0].getEntity(0).getPosition().getEnd());
         assertEquals("http://dbpedia.org/resource/Channel_4", tweets[0].getEntity(0).getLink());
@@ -40,11 +40,11 @@ public class Mind2016OutputParserTest {
         OutputParser parser = new Mind2016OutputParser(CSVFactory.getFactory());
         parser.setReader(reader);
 
-        LinkedTweet[] tweets = parser.items();
+        LinkedText[] tweets = parser.items();
 
         assertEquals(1, tweets.length);
         assertEquals(1, tweets[0].getEntities().length);
-        assertEquals("94103364815699969", tweets[0].getId());
+        assertEquals("94103364815699969", tweets[0].getTag());
         assertEquals(0, tweets[0].getEntity(0).getPosition().getStart());
         assertEquals(3, tweets[0].getEntity(0).getPosition().getEnd());
         assertTrue(tweets[0].getEntity(0).isNil());
@@ -67,7 +67,7 @@ public class Mind2016OutputParserTest {
         OutputParser parser = new Mind2016OutputParser(CSVFactory.getFactory());
         parser.setReader(reader);
 
-        LinkedTweet[] tweets = parser.items();
+        LinkedText[] tweets = parser.items();
 
         assertEquals(4, tweets.length);
         assertEquals(2, tweets[0].getEntities().length);
@@ -75,10 +75,10 @@ public class Mind2016OutputParserTest {
         assertEquals(1, tweets[2].getEntities().length);
         assertEquals(2, tweets[3].getEntities().length);
 
-        assertEquals("93656691425554432", tweets[0].getId());
-        assertEquals("94103364815699969", tweets[1].getId());
-        assertEquals("101428194460180480", tweets[2].getId());
-        assertEquals("96997663056207872", tweets[3].getId());
+        assertEquals("93656691425554432", tweets[0].getTag());
+        assertEquals("94103364815699969", tweets[1].getTag());
+        assertEquals("101428194460180480", tweets[2].getTag());
+        assertEquals("96997663056207872", tweets[3].getTag());
 
         assertTrue(tweets[1].getEntity(0).isNil());
     }

@@ -3,7 +3,7 @@ package it.unimib.disco.bigtwine.services.nel.processors;
 import it.unimib.disco.bigtwine.commons.executors.Executor;
 import it.unimib.disco.bigtwine.commons.executors.PerpetualExecutor;
 import it.unimib.disco.bigtwine.commons.executors.PerpetualFileExecutor;
-import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
+import it.unimib.disco.bigtwine.services.nel.domain.RecognizedText;
 import it.unimib.disco.bigtwine.commons.processors.file.PerpetualFileProcessor;
 import it.unimib.disco.bigtwine.services.nel.parsers.OutputParserBuilder;
 import it.unimib.disco.bigtwine.services.nel.producers.InputProducerBuilder;
@@ -11,10 +11,9 @@ import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.lang.RandomStringUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 
-public abstract class NelPerpetualFileProcessor extends NelFileProcessor implements PerpetualFileProcessor<RecognizedTweet> {
+public abstract class NelPerpetualFileProcessor extends NelFileProcessor implements PerpetualFileProcessor<RecognizedText> {
     protected PerpetualFileExecutor executor;
     protected FileAlterationMonitor fileMonitor;
     protected boolean monitorFilesOnly;
@@ -115,7 +114,7 @@ public abstract class NelPerpetualFileProcessor extends NelFileProcessor impleme
     }
 
     @Override
-    public boolean process(String tag, RecognizedTweet[] tweets) {
+    public boolean process(String tag, RecognizedText[] tweets) {
         File inputFile = this.makeInputFile(tag);
         return this.generateInputFile(inputFile, tweets);
     }

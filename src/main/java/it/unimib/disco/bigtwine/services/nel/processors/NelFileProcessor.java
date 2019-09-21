@@ -1,7 +1,7 @@
 package it.unimib.disco.bigtwine.services.nel.processors;
 
-import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
-import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
+import it.unimib.disco.bigtwine.services.nel.domain.LinkedText;
+import it.unimib.disco.bigtwine.services.nel.domain.RecognizedText;
 import it.unimib.disco.bigtwine.commons.processors.ProcessorListener;
 import it.unimib.disco.bigtwine.commons.processors.file.FileProcessor;
 import it.unimib.disco.bigtwine.services.nel.parsers.OutputParser;
@@ -17,7 +17,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public abstract class NelFileProcessor implements Processor, FileProcessor<RecognizedTweet> {
+public abstract class NelFileProcessor implements Processor, FileProcessor<RecognizedText> {
 
     private final Logger log = LoggerFactory.getLogger(NelFileProcessor.class);
 
@@ -27,7 +27,7 @@ public abstract class NelFileProcessor implements Processor, FileProcessor<Recog
     protected File workingDirectory;
     protected File inputDirectory;
     protected File outputDirectory;
-    protected ProcessorListener<LinkedTweet> processorListener;
+    protected ProcessorListener<LinkedText> processorListener;
 
     public NelFileProcessor(InputProducerBuilder inputProducerBuilder, OutputParserBuilder outputParserBuilder) {
         this.setInputProducerBuilder(inputProducerBuilder);
@@ -89,17 +89,17 @@ public abstract class NelFileProcessor implements Processor, FileProcessor<Recog
     }
 
     @Override
-    public void setListener(ProcessorListener<LinkedTweet> listener) {
+    public void setListener(ProcessorListener<LinkedText> listener) {
         this.processorListener = listener;
     }
 
     @Override
-    public boolean process(String tag, RecognizedTweet tweet) {
-        return this.process(tag, new RecognizedTweet[]{tweet});
+    public boolean process(String tag, RecognizedText tweet) {
+        return this.process(tag, new RecognizedText[]{tweet});
     }
 
     @Override
-    public boolean generateInputFile(File file, RecognizedTweet[] tweets) {
+    public boolean generateInputFile(File file, RecognizedText[] tweets) {
         File tmpFile;
         try {
             tmpFile = File.createTempFile(file.getName(), ".tmp", file.getAbsoluteFile().getParentFile());
@@ -154,7 +154,7 @@ public abstract class NelFileProcessor implements Processor, FileProcessor<Recog
         }
 
         String tag = FilenameUtils.removeExtension(outputFile.getName());
-        LinkedTweet[] tweets = outputParser.items();
+        LinkedText[] tweets = outputParser.items();
 
         if (!tag.isEmpty() && this.processorListener != null && tweets != null) {
             this.processorListener.onProcessed(this, tag, tweets);

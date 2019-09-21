@@ -1,13 +1,10 @@
 package it.unimib.disco.bigtwine.services.nel.processors;
 
 import it.unimib.disco.bigtwine.commons.executors.Executor;
-import it.unimib.disco.bigtwine.commons.models.LinkedEntity;
-import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
-import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
-import it.unimib.disco.bigtwine.commons.models.TextRange;
-import it.unimib.disco.bigtwine.commons.models.dto.LinkedEntityDTO;
-import it.unimib.disco.bigtwine.commons.models.dto.LinkedTweetDTO;
-import it.unimib.disco.bigtwine.commons.models.dto.TextRangeDTO;
+import it.unimib.disco.bigtwine.services.nel.domain.LinkedEntity;
+import it.unimib.disco.bigtwine.services.nel.domain.LinkedText;
+import it.unimib.disco.bigtwine.services.nel.domain.RecognizedText;
+import it.unimib.disco.bigtwine.services.nel.domain.TextRange;
 import it.unimib.disco.bigtwine.commons.processors.ProcessorListener;
 import it.unimib.disco.bigtwine.services.nel.Linker;
 
@@ -19,7 +16,7 @@ public class TestProcessor implements Processor {
 
     public static final Linker linker = Linker.test;
 
-    private ProcessorListener<LinkedTweet> processorListener;
+    private ProcessorListener<LinkedText> processorListener;
 
     private String[] links = new String[] {
         "http://dbpedia.org/resource/Lamar_Odom",
@@ -59,7 +56,7 @@ public class TestProcessor implements Processor {
     }
 
     @Override
-    public void setListener(ProcessorListener<LinkedTweet> listener) {
+    public void setListener(ProcessorListener<LinkedText> listener) {
         this.processorListener = listener;
     }
 
@@ -69,30 +66,30 @@ public class TestProcessor implements Processor {
     }
 
     @Override
-    public boolean process(String tag, RecognizedTweet item) {
-        return this.process(tag, new RecognizedTweet[]{item});
+    public boolean process(String tag, RecognizedText item) {
+        return this.process(tag, new RecognizedText[]{item});
     }
 
     @Override
-    public boolean process(String tag, RecognizedTweet[] items) {
-        List<LinkedTweet> linkedTweets = new ArrayList<>();
-        for (RecognizedTweet tweet : items) {
+    public boolean process(String tag, RecognizedText[] items) {
+        List<LinkedText> linkedTexts = new ArrayList<>();
+        for (RecognizedText tweet : items) {
             int count = tweet.getEntities().length > 0 ? new Random().nextInt(tweet.getEntities().length) : 0;
-            LinkedTweet lt = new LinkedTweetDTO(tweet.getId(), null);
+            LinkedText lt = new LinkedText(tweet.getTag(), null);
             List<LinkedEntity> entities = new ArrayList<>();
             for (int i = 0; i < count; ++i)  {
-                entities.add(new LinkedEntityDTO(
-                    new TextRangeDTO(0, 1),
+                entities.add(new LinkedEntity(
+                    new TextRange(0, 1),
                     this.links[new Random().nextInt(this.links.length)],
                     1.0f,
                     "test",
                     false
                 ));
             }
-            lt.setEntities(entities.toArray(new LinkedEntityDTO[0]));
-            linkedTweets.add(lt);
+            lt.setEntities(entities.toArray(new LinkedEntity[0]));
+            linkedTexts.add(lt);
         }
-        this.processorListener.onProcessed(this, tag, linkedTweets.toArray(new LinkedTweet[0]));
+        this.processorListener.onProcessed(this, tag, linkedTexts.toArray(new LinkedText[0]));
         return true;
     }
 }

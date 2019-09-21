@@ -1,23 +1,17 @@
 package it.unimib.disco.bigtwine.services.nel.processors;
 
 import it.unimib.disco.bigtwine.commons.executors.*;
-import it.unimib.disco.bigtwine.commons.models.LinkedTweet;
-import it.unimib.disco.bigtwine.commons.models.RecognizedTweet;
-import it.unimib.disco.bigtwine.commons.processors.ProcessorListener;
+import it.unimib.disco.bigtwine.services.nel.domain.RecognizedText;
 import it.unimib.disco.bigtwine.commons.processors.file.SyncFileProcessor;
-import it.unimib.disco.bigtwine.services.nel.parsers.OutputParser;
 import it.unimib.disco.bigtwine.services.nel.parsers.OutputParserBuilder;
-import it.unimib.disco.bigtwine.services.nel.producers.InputProducer;
 import it.unimib.disco.bigtwine.services.nel.producers.InputProducerBuilder;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.RandomStringUtils;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public abstract class NelSyncFileProcessor extends NelFileProcessor implements SyncFileProcessor<RecognizedTweet> {
+public abstract class NelSyncFileProcessor extends NelFileProcessor implements SyncFileProcessor<RecognizedText> {
 
     protected SyncFileExecutor executor;
 
@@ -59,7 +53,7 @@ public abstract class NelSyncFileProcessor extends NelFileProcessor implements S
     }
 
     @Override
-    public boolean process(String tag, RecognizedTweet[] tweets) {
+    public boolean process(String tag, RecognizedText[] tweets) {
         File inputFile = this.makeInputFile(tag);
         File outputFile = this.makeOutputFile(tag);
 
