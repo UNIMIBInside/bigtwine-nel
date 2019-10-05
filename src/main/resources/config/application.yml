@@ -97,6 +97,7 @@ spring:
                     content-type: application/json
                 nelRequestsChannel:
                     destination: nel-requests
+                    group: nel
 
 server:
     servlet:
