@@ -3,6 +3,7 @@ package it.unimib.disco.bigtwine.services.nel.service;
 import it.unimib.disco.bigtwine.commons.messaging.NelRequestMessage;
 import it.unimib.disco.bigtwine.commons.messaging.NelResponseMessage;
 import it.unimib.disco.bigtwine.commons.messaging.RequestCounter;
+import it.unimib.disco.bigtwine.commons.messaging.ResponseMessage;
 import it.unimib.disco.bigtwine.commons.messaging.dto.LinkedTextDTO;
 import it.unimib.disco.bigtwine.services.nel.domain.LinkedText;
 import it.unimib.disco.bigtwine.commons.processors.GenericProcessor;
@@ -23,7 +24,6 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -101,12 +101,14 @@ public class NelService implements ProcessorListener<LinkedText> {
         Linker linker = this.getLinker(request.getLinker());
 
         if (linker == null) {
+            this.sendRejected(request);
             return;
         }
 
         Processor processor = this.getProcessor(linker);
 
         if (processor == null) {
+            this.sendRejected(request);
             return;
         }
 
@@ -114,6 +116,18 @@ public class NelService implements ProcessorListener<LinkedText> {
         RecognizedText[] texts = NelMapper.INSTANCE.recognizedTextsFromDTOs(request.getTexts());
         this.requests.put(tag, new RequestCounter<>(request, texts.length));
         processor.process(tag, texts);
+    }
+
+    private void sendExpired(NelRequestMessage request) {
+        NelResponseMessage response = new NelResponseMessage();
+        response.setStatus(ResponseMessage.Status.EXPIRED);
+        this.doSendResponse(request, response);
+    }
+
+    private void sendRejected(NelRequestMessage request) {
+        NelResponseMessage response = new NelResponseMessage();
+        response.setStatus(ResponseMessage.Status.REJECTED);
+        this.doSendResponse(request, response);
     }
 
     private void sendResponse(Processor processor, String tag, LinkedText[] texts) {
@@ -136,6 +150,20 @@ public class NelService implements ProcessorListener<LinkedText> {
         response.setTexts(textDTOs);
         response.setRequestId(tag);
 
+        this.doSendResponse(request, response);
+
+        log.info("Request Processed: {}.", tag);
+    }
+
+    private void doSendResponse(NelRequestMessage request, NelResponseMessage response) {
+        if (response.getRequestId() == null) {
+            response.setRequestId(request.getRequestId());
+        }
+
+        if (response.getTexts() == null) {
+            response.setTexts(new LinkedTextDTO[0]);
+        }
+
         MessageBuilder<NelResponseMessage> messageBuilder = MessageBuilder
             .withPayload(response);
 
@@ -145,14 +173,17 @@ public class NelService implements ProcessorListener<LinkedText> {
         }else {
             this.channel.send(messageBuilder.build());
         }
-
-        log.info("Request Processed: {}.", tag);
     }
 
     @StreamListener(NelRequestsConsumerChannel.CHANNEL)
     public void onNewRequest(NelRequestMessage request) {
-        log.info("Request Received: {}.", request.getRequestId());
-        this.processRequest(request);
+        if (request.getExpiration() > 0 && System.currentTimeMillis() > request.getExpiration()) {
+            log.warn("Request expired before processing: {}.", request.getRequestId());
+            this.sendExpired(request);
+        } else {
+            log.info("Request Received: {}.", request.getRequestId());
+            this.processRequest(request);
+        }
     }
 
     @Override
